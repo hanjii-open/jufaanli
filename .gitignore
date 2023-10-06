@@ -1,0 +1,13 @@
+.DS_Store
+
+/downloads/*
+!/downloads/sample.zip
+!/downloads/.keep
+/downloads/docx/*
+!/downloads/docx
+!/downloads/docx/.keep
+/downloads/zip/*
+!/downloads/zip
+!/downloads/zip/.keep
+
+/db
