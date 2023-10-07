@@ -49,10 +49,6 @@ class Crime3 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
-        sentences = line.split(/[#{Doc::PUNS}]\s*/)
-        sentences.each do |sentence|
-          next if sentence.end_with?('的')
-        end
         conclusion = $~[1] if /本院认为(.+)/ =~ line
         {
           doc_id: doc.id,

@@ -47,6 +47,7 @@ class Crime1 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
+        conclusion = $~[1] if /本院认为(.+)/ =~ line
         sentences = line.split(/[#{Doc::PUNS}]\s*/)
         d1s = []
         d5s = []
@@ -61,7 +62,6 @@ class Crime1 < ActiveRecord::Base
           when /尚未赔偿.*全部损失/ =~ sentence then d7s << '部分赔偿'
           end
         end
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
         {
           doc_id: doc.id,
           d1: d1s.presence && d1s.to_csv(row_sep: nil),

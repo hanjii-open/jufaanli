@@ -56,13 +56,13 @@ class Crime2 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
+        conclusion = $~[1] if /本院认为(.+)/ =~ line
         sentences = line.split(/[#{Doc::PUNS}]\s*/)
         d1s = []
         sentences.each do |sentence|
           next if sentence.end_with?('的')
           d1s << $~[1] if /骗取[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/ =~ sentence
         end
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
         {
           doc_id: doc.id,
           d1: d1s.presence && d1s.to_csv(row_sep: nil),
@@ -99,7 +99,7 @@ class Crime2 < ActiveRecord::Base
           d32: d32 = /缓刑/.match?(conclusion),
           d33: d32.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
           d34: d34 = /罚金/.match?(conclusion),
-          d35: /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1)
+          d35: d34.presence && /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1)
         }
       end
       upsert_all(batch) if batch.any?
