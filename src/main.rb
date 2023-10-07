@@ -1,15 +1,23 @@
-def init_db
+def init reset = false
+  require 'zip'
+  require 'csv'
   require 'active_record'
-  ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database: 'db/database.sqlite3')
+
+  database = 'tmp/database.sqlite3'
+  File.delete(database) if reset && File.exist?(database)
+  ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database:)
 
   Dir.glob(File.join('src', 'models', '*.rb')).each do |path|
     load path
   end
-  Doc::Migration.migrate(:up)
-  Crime1::Migration.migrate(:up)
+
+  Doc::Migration.migrate(:up) unless Doc.table_exists?
+  Crime1::Migration.migrate(:up) unless Crime1.table_exists?
+  Crime2::Migration.migrate(:up) unless Crime2.table_exists?
 end
 
-init_db
+init(ARGV.include?('reset'))
 
-Doc.seed if ARGV.include?('all') && ARGV.include?('seed')
-Doc.etl if ARGV.include?('all') && ARGV.include?('etl')
+Doc.import if ARGV.include?('all') || ARGV.include?('import')
+Doc.scrape if ARGV.include?('all') || ARGV.include?('scrape')
+Doc.export if ARGV.include?('all') || ARGV.include?('export')

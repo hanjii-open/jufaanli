@@ -1,38 +1,58 @@
 class Doc < ActiveRecord::Base
+  NAME = '文书'
+  ATTRS = {
+    url: '原始链接',
+    code: '案号',
+    name: '案件名称',
+    court: '法院',
+    region: '所属地区',
+    trial: '审理程序',
+    trial_day: '裁判日期',
+    publish_day: '公开日期',
+    client: '当事人',
+    cause: '案由',
+    law: '法律依据',
+    content: '全文'
+  }.with_indifferent_access.freeze
+
+  NUMS = '0123456789零○〇一二三四五六七八九十百千万\.\,'
+  PUNS = '，。；：！？'
+  DATES = '年个月日天'
+
   class Migration < ActiveRecord::Migration[7.0]
     def change
-      create_table :docs, if_not_exists: true do |t|
-        t.string :url # 原始链接
-        t.string :code, index: true # 案号
-        t.string :name, index: true # 案件名称
-        t.string :court # 法院
-        t.string :region # 所属地区
-        t.string :trial # 审理程序
-        t.string :trial_day, index: true # 裁判日期
-        t.string :publish_day # 公开日期
-        t.string :client # 当事人
-        t.string :cause # 案由
-        t.string :law # 法律依据
-        t.text :content # 全文
+      create_table :docs do |t|
+        t.string :url
+        t.string :code, index: true
+        t.string :name, index: true
+        t.string :court
+        t.string :region
+        t.string :trial
+        t.string :trial_day, index: true
+        t.string :publish_day
+        t.string :client
+        t.string :cause
+        t.string :law
+        t.text :content
       end
     end
   end
 
   scope :match, -> (s) { where("content LIKE ?", "%#{s}%") }
-  scope :match_crime1, -> { match('非法吸收公众存款罪') }
-  scope :match_crime2, -> { match('诈骗罪') }
   scope :match_crime3, -> { match('强奸罪') }
   scope :match_crime4, -> { match('妨害公务罪') }
   scope :match_crime5, -> { match('醉酒型危险驾驶罪') }
   scope :match_crime6, -> { match('掩饰、隐瞒犯罪所得、犯罪所得收益罪') }
 
-  def self.unzip dir = File.join('downloads', 'zip')
-    require 'zip'
-    require 'csv'
-    tmp_filename = File.join('downloads', '_.csv')
+  def self.crime_klasses
+    [Crime1, Crime2]
+  end
+
+  def self.unzip dir = File.join('tmp', 'zip')
+    tmp_filename = File.join('tmp', '_.csv')
     Dir.glob('*.zip', base: dir).each do |filename|
       Zip::File.open(File.join(dir, filename)) do |zip_file|
-        puts "#{Time.current}... #{zip_file.name}"
+        puts "#{Time.current}... #{self.name} #{__method__} #{zip_file.name}"
         zip_file.each do |entry|
           next unless entry.name.end_with?('.csv')
           File.delete(tmp_filename) if File.exist?(tmp_filename)
@@ -46,7 +66,7 @@ class Doc < ActiveRecord::Base
               trial_day = row['裁判日期'].presence
               # break if Doc.where("trial_day LIKE '%#{trial_day[0...7]}%'").exists?
               next if code && Doc.where(code:).exists?
-              puts "#{Time.current}... #{trial_day} #{code}"
+              puts "#{Time.current}... #{self.name} #{__method__} #{trial_day} #{code}"
               Doc.create(
                 url:,
                 code:,
@@ -70,11 +90,27 @@ class Doc < ActiveRecord::Base
     end
   end
 
-  def self.seed
+  def self.import
     unzip
   end
 
-  def self.etl
-    Crime1.etl
+  def self.scrape
+    crime_klasses.each do |klass|
+      klass.scrape
+    end
+  end
+
+  def self.export
+    crime_klasses.each do |klass|
+      puts "#{Time.current}... #{klass.name} #{__method__} #{klass.count}"
+      CSV.open(File.join('tmp', "#{klass.model_name.singular}_#{klass::NAME}.csv"), 'w') do |csv|
+        crime_attrs = klass.attribute_names - %w[id doc_id]
+        doc_attrs = Doc.attribute_names - %w[id]
+        csv << crime_attrs.map { klass::ATTRS[_1] } + doc_attrs.map { Doc::ATTRS[_1] }
+        klass.includes(:doc).find_each do |crime|
+          csv << crime.values_at(crime_attrs) + crime.doc.values_at(doc_attrs)
+        end
+      end
+    end
   end
 end
