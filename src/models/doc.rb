@@ -38,12 +38,11 @@ class Doc < ActiveRecord::Base
     end
   end
 
-  scope :match, -> (s) { where("content LIKE ?", "%#{s}%") }
-  scope :match_crime5, -> { match('醉酒型危险驾驶罪') }
+  scope :match, -> (*ss) { ss.flatten.reduce(self) { _1.where("content LIKE ?", "%#{_2}%") } }
   scope :match_crime6, -> { match('掩饰、隐瞒犯罪所得、犯罪所得收益罪') }
 
   def self.crime_klasses
-    [Crime1, Crime2, Crime3, Crime4]
+    [Crime1, Crime2, Crime3, Crime4, Crime5]
   end
 
   def self.unzip dir = File.join('tmp', 'zip')
