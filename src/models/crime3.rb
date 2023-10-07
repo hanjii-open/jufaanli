@@ -49,20 +49,20 @@ class Crime3 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
+        conclusion = $~[1] if /本院认为(.+)/.match(line)
         {
           doc_id: doc.id,
-          d1: nil,
-          d2: nil,
-          d3: nil,
-          d4: nil,
+          d1: 'TODO',
+          d2: 'TODO',
+          d3: 'TODO',
+          d4: 'TODO',
           d5: /公共场所/.match?(conclusion),
           d6: /轮奸/.match?(line) && !/(不构成轮奸|不具有轮奸情节)/.match?(line),
           d7: /(不满十周岁|未满十周岁)/.match?(line),
           d8: /幼女[^#{Doc::PUNS}]*(轻伤|轻微伤|重伤)/.match?(line),
-          d9: nil,
-          d10: nil,
-          d11: nil,
+          d9: 'TODO',
+          d10: 'TODO',
+          d11: 'TODO',
           d12: /未遂/.match?(conclusion),
           d13: /从犯/.match?(conclusion),
           d14: /自首/.match?(conclusion),

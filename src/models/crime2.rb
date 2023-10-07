@@ -56,7 +56,7 @@ class Crime2 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
+        conclusion = $~[1] if /本院认为(.+)/.match(line)
         sentences = line.split(/[#{Doc::PUNS}]\s*/)
         d1s = []
         sentences.each do |sentence|

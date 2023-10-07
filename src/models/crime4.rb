@@ -53,10 +53,10 @@ class Crime4 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
+        conclusion = $~[1] if /本院认为(.+)/.match(line)
         {
           doc_id: doc.id,
-          d1: nil,
+          d1: 'TODO',
           d2: d2 = /轻伤/.match?(line),
           d3: d2 ? /致([#{Doc::NUMS} ]+?人轻伤)/.match(conclusion)&.[](1) || 1 : 0,
           d4: d4 = /轻微伤/.match?(line),
@@ -68,7 +68,7 @@ class Crime4 < ActiveRecord::Base
           d10: /袭警/.match?(conclusion),
           d11: /煽动群众/.match?(conclusion),
           d12: /持械/.match?(conclusion),
-          d13: nil,
+          d13: 'TODO',
           d14: /#{d14a = '执行公务不规范'}/.match?(line) ? /#{d14a}[^#{Doc::PUNS}]*[#{Doc::PUNS}]?[^#{Doc::PUNS}]*#{d14b = '不予采纳'}/.match?(line) || /#{d14b}[^#{Doc::PUNS}]*#{d14a}/.match?(line) || /#{d14a}.{0,150}#{d14b}/.match?(line) : true,
           d15: /自首/.match?(conclusion),
           d16: /坦白/.match?(conclusion),

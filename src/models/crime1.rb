@@ -47,7 +47,7 @@ class Crime1 < ActiveRecord::Base
     Doc.match(NAME).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
+        conclusion = $~[1] if /本院认为(.+)/.match(line)
         sentences = line.split(/[#{Doc::PUNS}]\s*/)
         d1s = []
         d5s = []
@@ -67,15 +67,15 @@ class Crime1 < ActiveRecord::Base
           d1: d1s.presence && d1s.to_csv(row_sep: nil),
           d2: d2 = /数额巨大/.match?(conclusion),
           d3: !d2 && /数额特别巨大/.match?(conclusion),
-          d4: nil,
+          d4: 'TODO',
           d5: d5s.presence && d5s.to_csv(row_sep: nil),
-          d6: nil,
+          d6: 'TODO',
           d7: d7s.any? ? d7s.to_csv(row_sep: nil) : '未赔偿',
           d8: /从犯/.match?(conclusion),
           d9: /自首/.match?(conclusion),
           d10: /坦白/.match?(conclusion),
           d11: /自愿认罪/.match?(conclusion),
-          d12: nil,
+          d12: 'TODO',
           d13: /谅解/.match?(conclusion),
           d14: /和解/.match?(conclusion),
           d15: /羁押期间表现良好/.match?(conclusion),

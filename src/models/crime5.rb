@@ -50,7 +50,7 @@ class Crime5 < ActiveRecord::Base
     Doc.match(NAME_PARTS).find_in_batches do |doc_batch|
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
-        conclusion = $~[1] if /本院认为(.+)/ =~ line
+        conclusion = $~[1] if /本院认为(.+)/.match(line)
         {
           doc_id: doc.id,
           d1: /含量[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+(?i:mg) *\/ *100 *(?i:ml))/.match(conclusion)&.[](1),
@@ -64,7 +64,7 @@ class Crime5 < ActiveRecord::Base
           d9: /(重伤)/.match?(line),
           d10: /重伤[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+)/.match(line)&.[](1),
           d11: /(财物损失|财产损失)/.match?(line),
-          d12: nil,
+          d12: 'TODO',
           d13: /(轻伤)/.match?(line),
           d14: /轻伤[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+)/.match(line)&.[](1),
           d15: /自首/.match?(conclusion),
