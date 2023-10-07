@@ -53,8 +53,8 @@ class Crime1 < ActiveRecord::Base
         d7s = []
         sentences.each do |sentence|
           next if sentence.end_with?('的')
-          d1s << sentence if /(吸收|募集).+元/ =~ sentence
-          d5s << sentence if /损失.+元/ =~ sentence
+          d1s << $~[1] if /(吸收|募集)[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/ =~ sentence
+          d5s << $~[1] if /损失[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/ =~ sentence
           case
           when /赔偿.*部分损失/ =~ sentence then d7s << '部分赔偿'
           when /赔偿.*全部损失/ =~ sentence then d7s << '全部赔偿'

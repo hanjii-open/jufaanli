@@ -12,8 +12,9 @@ def init reset = false
   end
 
   Doc::Migration.migrate(:up) unless Doc.table_exists?
-  Crime1::Migration.migrate(:up) unless Crime1.table_exists?
-  Crime2::Migration.migrate(:up) unless Crime2.table_exists?
+  Doc.crime_klasses.each do |klass|
+    klass::Migration.migrate(:up) unless klass.table_exists?
+  end
 end
 
 init(ARGV.include?('reset'))
