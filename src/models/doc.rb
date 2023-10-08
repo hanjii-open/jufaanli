@@ -22,14 +22,14 @@ class Doc < ActiveRecord::Base
   class Migration < ActiveRecord::Migration[7.0]
     def change
       create_table :docs do |t|
-        t.string :url
+        t.string :url, index: true
         t.string :code, index: true
         t.string :name, index: true
-        t.string :court
-        t.string :region
-        t.string :trial
+        t.string :court, index: true
+        t.string :region, index: true
+        t.string :trial, index: true
         t.string :trial_day, index: true
-        t.string :publish_day
+        t.string :publish_day, index: true
         t.string :client
         t.string :cause
         t.string :law

@@ -6,6 +6,8 @@ def init reset = false
   database = 'tmp/database.sqlite3'
   File.delete(database) if reset && File.exist?(database)
   ActiveRecord::Base.establish_connection(adapter: 'sqlite3', database:)
+  # ActiveRecord::Base.logger = ActiveSupport::Logger.new(File.join('tmp', 'main.log'))
+  # https://www.devdungeon.com/content/ruby-activerecord-without-rails-tutorial
 
   Dir.glob(File.join('src', 'models', '*.rb')).each do |path|
     load path
