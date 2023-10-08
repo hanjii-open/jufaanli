@@ -61,7 +61,7 @@ class Crime2 < ActiveRecord::Base
         d1s = []
         sentences.each do |sentence|
           next if sentence.end_with?('的')
-          d1s << $~[1] if /骗取[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/ =~ sentence
+          d1s << $~[1] if /骗取[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(sentence)
         end
         {
           doc_id: doc.id,

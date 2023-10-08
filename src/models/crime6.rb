@@ -54,7 +54,7 @@ class Crime6 < ActiveRecord::Base
       batch = doc_batch.map do |doc|
         line = doc.content.gsub(/[\r\n]+/, '  ')
         conclusion = $~[1] if /本院认为(.+)/.match(line)
-        committing = $~[0] if /[^#{Doc::PUNS} ]被告人[^#{Doc::PUNS} ]*犯[^#{Doc::PUNS} ]*罪[^#{Doc::PUNS} ]/.match?(line)
+        committing = $~[0] if /[^#{Doc::PUNS} ]被告人[^#{Doc::PUNS} ]*犯[^#{Doc::PUNS} ]*罪[^#{Doc::PUNS} ]/.match(line)
         {
           doc_id: doc.id,
           d1: /掩饰/.match?(committing),
