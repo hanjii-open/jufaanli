@@ -58,7 +58,7 @@ class Crime2 < ActiveRecord::Base
         line = doc.content.gsub(/[\r\n]+/, '  ')
         conclusion = $~[1] if /本院认为(.+)/.match(line)
         sentences = line.split(/[#{Doc::PUNS}]\s*/)
-        d1s = []
+        d1s = Set.new
         sentences.each do |sentence|
           next if sentence.end_with?('的')
           d1s << $~[1] if /骗取[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(sentence)
