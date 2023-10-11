@@ -86,8 +86,8 @@ class Crime1 < ActiveRecord::Base
           d20: /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1),
           d21: d21 = /缓刑/.match?(conclusion),
           d22: d21.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
-          d23: doc.region || nil,
-          d24: doc.trial_day || /审 *判 *员.+([#{Doc::NUMS}]年[#{Doc::NUMS}]月[#{Doc::NUMS}]日)/.match(line)&.[](1),
+          d23: doc.region,
+          d24: doc.short_trial_day, # /审 *判 *员.+([#{Doc::NUMS}]年[#{Doc::NUMS}]月[#{Doc::NUMS}]日)/.match(line)&.[](1),
           d25: /主观恶性大/.match?(conclusion),
           d26: /人身危险性大/.match?(conclusion)
         }

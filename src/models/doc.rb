@@ -121,4 +121,8 @@ class Doc < ActiveRecord::Base
       end
     end
   end
+
+  def short_trial_day
+    trial_day.presence && trial_day.gsub('-', '')
+  end
 end
