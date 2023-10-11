@@ -45,7 +45,12 @@ class Doc < ActiveRecord::Base
   has_many :crime5s, dependent: :destroy
   has_many :crime6s, dependent: :destroy
 
-  scope :match, -> (*ss) { ss.flatten.reduce(self) { _1.where("content LIKE ?", "%#{_2}%") } }
+  scope :match, -> (*ss) do
+    relation = where(trial: '一审')
+    ss.flatten.reduce(relation) do
+      _1.where("content LIKE ?", "%#{_2}%")
+    end
+  end
 
   def self.crime_klasses
     [Crime1, Crime2, Crime3, Crime4, Crime5, Crime6]
