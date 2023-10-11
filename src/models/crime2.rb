@@ -65,7 +65,7 @@ class Crime2 < ActiveRecord::Base
         end
         {
           doc_id: doc.id,
-          d1: d1s.presence && d1s.to_csv(row_sep: nil),
+          d1: d1s.presence && d1s.to_a.to_csv(row_sep: nil),
           d2: d2 = /数额较大/.match?(conclusion),
           d3: d3 = !d2 && /数额巨大/.match?(conclusion),
           d4: !d2 && !d3 && /数额特别巨大/.match?(conclusion),

@@ -74,7 +74,7 @@ class Doc < ActiveRecord::Base
               trial_day = row['裁判日期'].presence
               # break if Doc.where("trial_day LIKE '%#{trial_day[0...7]}%'").exists?
               next if code && Doc.where(code:).exists?
-              puts "#{Time.current}... #{self.name} #{__method__} #{trial_day} #{code}"
+              # puts "#{Time.current}... #{self.name} #{__method__} #{trial_day} #{code}"
               Doc.create(
                 url:,
                 code:,

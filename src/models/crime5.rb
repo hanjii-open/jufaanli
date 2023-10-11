@@ -53,7 +53,7 @@ class Crime5 < ActiveRecord::Base
         conclusion = $~[1] if /本院认为(.+)/.match(line)
         {
           doc_id: doc.id,
-          d1: /含量[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+(?i:mg) *\/ *100 *(?i:ml))/.match(conclusion)&.[](1),
+          d1: /含量[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+(?i:mg) *\/ *100 *(?i:ml))/.match(line)&.[](1),
           d2: /(摩托车|电动车)/.match(line)&.[](1) || '汽车',
           d3: /负事故(全部责任|主要责任)/.match(line)&.[](1) || '其他',
           d4: /逃逸/.match?(conclusion),
