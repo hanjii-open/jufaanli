@@ -34,7 +34,7 @@ class Crime2 < ActiveRecord::Base
     d31: '是否死刑',
     d32: '是否缓刑',
     d33: '缓刑刑期',
-    d34: '是否判处罚金刑',
+    d34: '是否判处罚金',
     d35: '罚金数额'
   }.with_indifferent_access.freeze
 

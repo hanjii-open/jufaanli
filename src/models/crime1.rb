@@ -20,13 +20,14 @@ class Crime1 < ActiveRecord::Base
     d17: '是否累犯',
     d18: '是否有前科',
     d19: '有期徒刑年数',
-    d20: '罚金数额',
-    d21: '是否判处缓刑',
-    d22: '缓刑长度',
-    d23: '法院所处省份',
-    d24: '判决时间',
-    d25: '主观恶性大小',
-    d26: '人身危险性大小'
+    d20: '是否判处罚金',
+    d21: '罚金数额',
+    d22: '是否判处缓刑',
+    d23: '缓刑长度',
+    d24: '法院所处省份',
+    d25: '判决时间',
+    d26: '主观恶性大小',
+    d27: '人身危险性大小'
   }.with_indifferent_access.freeze
 
   class Migration < ActiveRecord::Migration[7.0]
@@ -83,13 +84,14 @@ class Crime1 < ActiveRecord::Base
           d17: /累犯/.match?(conclusion),
           d18: /前科/.match?(conclusion),
           d19: /有期徒刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
-          d20: /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1),
-          d21: d21 = /缓刑/.match?(conclusion),
-          d22: d21.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
-          d23: doc.region,
-          d24: doc.short_trial_day, # /审 *判 *员.+([#{Doc::NUMS}]年[#{Doc::NUMS}]月[#{Doc::NUMS}]日)/.match(line)&.[](1),
-          d25: /主观恶性大/.match?(conclusion),
-          d26: /人身危险性大/.match?(conclusion)
+          d20: d20 = /罚金/.match?(conclusion),
+          d21: d20.presence && /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1),
+          d22: d22 = /缓刑/.match?(conclusion),
+          d23: d22.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d24: doc.region,
+          d25: doc.short_trial_day, # /审 *判 *员.+([#{Doc::NUMS}]年[#{Doc::NUMS}]月[#{Doc::NUMS}]日)/.match(line)&.[](1),
+          d26: /主观恶性大/.match?(conclusion),
+          d27: /人身危险性大/.match?(conclusion)
         }
       end
       upsert_all(batch) if batch.any?
