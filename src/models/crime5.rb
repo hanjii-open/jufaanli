@@ -80,7 +80,7 @@ class Crime5 < ActiveRecord::Base
           d25: d25 = /缓刑/.match?(conclusion),
           d26: d25.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
           d27: d27 = /罚金/.match?(conclusion),
-          d28: d27.presence && /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1)
+          d28: d27.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1)
         }
       end
       upsert_all(batch) if batch.any?

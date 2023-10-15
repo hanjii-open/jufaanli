@@ -15,7 +15,8 @@ class Doc < ActiveRecord::Base
     content: '全文'
   }.with_indifferent_access.freeze
 
-  NUMS = '0123456789零○〇一二三四五六七八九十百千万\.\,'
+  NUMS = '0123456789零○〇一二三四五六七八九十百千万\.,'
+  RMB_EXP = "[123456789一二三四五六七八九十][#{NUMS} ]*元"
   PUNS = '，。；：！？'
   DATES = '年个月日天'
 

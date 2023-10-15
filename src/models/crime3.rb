@@ -74,7 +74,7 @@ class Crime3 < ActiveRecord::Base
           d17: /自首/.match?(conclusion),
           d18: /坦白/.match?(conclusion),
           d19: /当庭自愿认罪/.match?(conclusion),
-          d20: /赔偿金额[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1),
+          d20: /赔偿金额[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
           d21: /谅解/.match?(conclusion),
           d22: /刑事和解/.match?(conclusion),
           d23: /羁押期间表现良好/.match?(conclusion),

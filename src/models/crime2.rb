@@ -61,7 +61,7 @@ class Crime2 < ActiveRecord::Base
         d1s = Set.new
         sentences.each do |sentence|
           next if sentence.end_with?('的')
-          d1s << $~[1] if /骗取[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(sentence)
+          d1s << $~[1] if /骗取.*?(#{Doc::RMB_EXP})/.match(sentence)
         end
         {
           doc_id: doc.id,
@@ -99,7 +99,7 @@ class Crime2 < ActiveRecord::Base
           d32: d32 = /缓刑/.match?(conclusion),
           d33: d32.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
           d34: d34 = /罚金/.match?(conclusion),
-          d35: d34.presence && /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1)
+          d35: d34.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1)
         }
       end
       upsert_all(batch) if batch.any?

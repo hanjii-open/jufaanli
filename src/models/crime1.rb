@@ -55,8 +55,8 @@ class Crime1 < ActiveRecord::Base
         d7s = []
         sentences.each do |sentence|
           next if sentence.end_with?('的')
-          d1s << $~[2] if /(吸收|募集)[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(sentence)
-          d5s << $~[1] if /损失[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(sentence)
+          d1s << $~[1] if /(?:吸收|募集).*?(#{Doc::RMB_EXP})/.match(sentence)
+          d5s << $~[1] if /损失.*?(#{Doc::RMB_EXP})/.match(sentence)
           case
           when /赔偿.*部分损失/.match?(sentence) then d7s << '部分赔偿'
           when /赔偿.*全部损失/.match?(sentence) then d7s << '全部赔偿'
@@ -85,7 +85,7 @@ class Crime1 < ActiveRecord::Base
           d18: /前科/.match?(conclusion),
           d19: /有期徒刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
           d20: d20 = /罚金/.match?(conclusion),
-          d21: d20.presence && /罚金[^#{Doc::PUNS}]*?([#{Doc::NUMS} ]+元)/.match(conclusion)&.[](1),
+          d21: d20.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
           d22: d22 = /缓刑/.match?(conclusion),
           d23: d22.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
           d24: doc.region,
