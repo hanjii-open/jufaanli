@@ -21,6 +21,7 @@ class Crime3 < ActiveRecord::Base
     d18: '坦白',
     d19: '当庭自愿认罪',
     d20: '赔偿金额',
+    d20t: '赔偿金额*',
     d21: '谅解',
     d22: '刑事和解',
     d23: '羁押期间表现良好',
@@ -30,8 +31,10 @@ class Crime3 < ActiveRecord::Base
     d27: '是否死刑',
     d28: '是否无期徒刑',
     d29: '有期徒刑年数',
+    d29t: '有期徒刑年数*',
     d30: '是否判处缓刑',
-    d31: '缓刑长度'
+    d31: '缓刑长度',
+    d31t: '缓刑长度*'
   }.with_indifferent_access.freeze
 
   class Migration < ActiveRecord::Migration[7.0]
@@ -74,7 +77,8 @@ class Crime3 < ActiveRecord::Base
           d17: /自首/.match?(conclusion),
           d18: /坦白/.match?(conclusion),
           d19: /当庭自愿认罪/.match?(conclusion),
-          d20: /赔偿金额[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
+          d20: d20 = /赔偿金额[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
+          d20t: Doc.translate_rmb(d20),
           d21: /谅解/.match?(conclusion),
           d22: /刑事和解/.match?(conclusion),
           d23: /羁押期间表现良好/.match?(conclusion),
@@ -83,9 +87,11 @@ class Crime3 < ActiveRecord::Base
           d26: /前科/.match?(conclusion),
           d27: /死刑/.match?(conclusion),
           d28: /无期徒刑/.match?(conclusion),
-          d29: /有期徒刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d29: d29 = /有期徒刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d29t: Doc.translate_date(d29),
           d30: d30 = /缓刑/.match?(conclusion),
-          d31: d30.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1)
+          d31: d31 = d30.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d31t: Doc.translate_date(d31)
         }
       end
       upsert_all(batch) if batch.any?

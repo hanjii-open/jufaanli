@@ -15,8 +15,14 @@ class Doc < ActiveRecord::Base
     content: '全文'
   }.with_indifferent_access.freeze
 
-  NUMS = '0123456789零○〇一二三四五六七八九十百千万\.,'
+  NUMS = '0123456789○〇零一二三四五六七八九十百千万亿\.,'
   RMB_EXP = "[123456789一二三四五六七八九十][#{NUMS} ]*元"
+  NUM_VALS = {
+    '0' => 0, '1' => 1, '2' => 2, '3' => 3, '4' => 4, '5' => 5, '6' => 6, '7' => 7, '8' => 8, '9' => 9,
+    '零' => 0, '一' => 1, '二' => 2, '三' => 3, '四' => 4, '五' => 5, '六' => 6, '七' => 7, '八' => 8, '九' => 9,
+    '○' => 0, '〇' => 0,
+  }
+
   PUNS = '，。；：！？'
   DATES = '年个月日天'
 
@@ -121,6 +127,49 @@ class Doc < ActiveRecord::Base
         end
       end
     end
+  end
+
+  def self.translate_num s
+    weight = wan = 1
+    acc = 0
+    (arr = s.split('').reverse).each.with_index do |c, i|
+      case
+      when NUM_VALS.key?(c)
+        acc += NUM_VALS[c] * weight
+      when c == '十'
+        weight = wan * 10
+        acc += weight if NUM_VALS.keys.exclude?(arr[i + 1])
+      when c == '百'
+        weight = wan * 100
+      when c == '千'
+        weight = wan * 1000
+      when c == '万'
+        weight = wan = (wan > 10000 ? wan * 10000 : 10000)
+      when c == '亿'
+        weight = wan = (wan > 100000000 ? wan * 100000000 : 100000000)
+      end
+    end
+    acc
+  end
+
+  def self.translate_rmb s
+    return nil if !s
+    return s if s.is_a?(Numeric)
+    s = s.gsub(/[ ,元]/, '')
+    return (s.include?('.') ? s.to_f : s.to_i) * ($~[1] ? 10000 : 1) if /^[\d\.]+(万)?$/.match(s)
+    translate_num(s)
+  end
+
+  def self.translate_date s
+    return nil if !s
+    s.gsub(/ /, '').scan(/[#{NUMS}]+[#{DATES}]+/).map do |s|
+      case s
+      when /([#{NUMS}]+)年/ then translate_num($~[1]) * 360
+      when /([#{NUMS}]+)个?月/ then translate_num($~[1]) * 30
+      when /([#{NUMS}]+)(日|天)/ then translate_num($~[1])
+      else 0
+      end
+    end.sum
   end
 
   def short_trial_day

@@ -25,14 +25,19 @@ class Crime6 < ActiveRecord::Base
     d22: '上游犯罪种类',
     d23: '是否拘役',
     d24: '拘役月数',
+    d24t: '拘役月数*',
     d25: '是否判处缓刑',
     d26: '缓刑长度',
+    d26t: '缓刑长度*',
     d27: '是否判处罚金',
     d28: '罚金数额',
+    d28t: '罚金数额*',
     d29: '是否管制',
     d30: '管制月数',
+    d30t: '管制月数*',
     d31: '是否有期徒刑',
-    d32: '有期徒刑刑期'
+    d32: '有期徒刑刑期',
+    d32t: '有期徒刑刑期*'
   }.with_indifferent_access.freeze
 
   class Migration < ActiveRecord::Migration[7.0]
@@ -80,15 +85,20 @@ class Crime6 < ActiveRecord::Base
           d21: /前科/.match?(conclusion),
           d22: /(被盗|盗窃|偷窃)/.match?(line) ? '盗窃罪' : /诈骗/.match?(line) ? '诈骗罪' : /受贿/.match?(line) ? '受贿罪' : /贪污/.match?(line) ? '贪污罪' : /抢劫/.match?(line) ? '抢劫罪' : /抢夺/.match?(line) ? '抢夺罪' : /明知([^#{Doc::PUNS}]+罪)/.match(line)&.[](1),
           d23: d23 = /拘役/.match?(conclusion),
-          d24: d23.presence && /拘役[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d24: d24 = d23.presence && /拘役[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d24t: Doc.translate_date(d24),
           d25: d25 = /缓刑/.match?(conclusion),
-          d26: d25.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d26: d26 = d25.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d26t: Doc.translate_date(d26),
           d27: d27 = /罚金/.match?(conclusion),
-          d28: d27.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
+          d28: d28 = d27.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
+          d28t: Doc.translate_rmb(d28),
           d29: d29 = /管制/.match?(conclusion),
-          d30: d29.presence && /管制[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d30: d30 = d29.presence && /管制[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d30t: Doc.translate_date(d30),
           d31: d31 = /有期徒刑/.match?(conclusion),
-          d32: d31.presence && /有期徒刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1)
+          d32: d32 = d31.presence && /有期徒刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d32t: Doc.translate_date(d32)
         }
       end
       upsert_all(batch) if batch.any?

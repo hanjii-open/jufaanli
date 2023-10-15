@@ -26,10 +26,13 @@ class Crime5 < ActiveRecord::Base
     d22: '前科',
     d23: '是否拘役',
     d24: '拘役月数',
+    d24t: '拘役月数*',
     d25: '是否判处缓刑',
     d26: '缓刑长度',
+    d26t: '缓刑长度*',
     d27: '是否判处罚金',
-    d28: '罚金数额'
+    d28: '罚金数额',
+    d28t: '罚金数额*'
   }.with_indifferent_access.freeze
 
   class Migration < ActiveRecord::Migration[7.0]
@@ -76,11 +79,14 @@ class Crime5 < ActiveRecord::Base
           d21: /累犯/.match?(conclusion),
           d22: /前科/.match?(conclusion),
           d23: d23 = /拘役/.match?(conclusion),
-          d24: d23.presence && /拘役[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d24: d24 = d23.presence && /拘役[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d24t: Doc.translate_date(d24),
           d25: d25 = /缓刑/.match?(conclusion),
-          d26: d25.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d26: d26 = d25.presence && /缓刑[^#{Doc::PUNS}]*?([#{Doc::NUMS}#{Doc::DATES} ]+)/.match(conclusion)&.[](1),
+          d26t: Doc.translate_date(d26),
           d27: d27 = /罚金/.match?(conclusion),
-          d28: d27.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1)
+          d28: d28 = d27.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
+          d28t: Doc.translate_rmb(d28)
         }
       end
       upsert_all(batch) if batch.any?

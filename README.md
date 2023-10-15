@@ -1,7 +1,7 @@
 # Usage
 
 ```
-ruby src/main.rb [all|import|scrape|export|reset]
+ruby src/main.rb [all|import|scrape|export|reset|reset!]
 ```
 
 ## import
@@ -22,7 +22,11 @@ ruby src/main.rb [all|import|scrape|export|reset]
 
 ## reset
 
-重置数据库。
+只重置 crime 数据库。
+
+# reset!
+
+重置全部数据库。
 
 # Installation
 
