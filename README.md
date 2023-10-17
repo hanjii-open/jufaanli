@@ -14,7 +14,7 @@ ruby src/main.rb [all|import|scrape|export|reset|reset!]
 
 ## export
 
-将罪名信息和文书导出成表格。导出结果在 `tmp` 目录中，文件名为 `[代号]_[罪名].csv`。
+将罪名信息和文书（概要）导出成表格。导出结果在 `tmp` 目录中，文件名为 `[代号]_[罪名].csv`。
 
 ## all
 
@@ -24,7 +24,11 @@ ruby src/main.rb [all|import|scrape|export|reset|reset!]
 
 只重置 crime 数据库。
 
-# reset!
+## export!
+
+在 `export` 的基础上，额外导出文书全文。
+
+## reset!
 
 重置全部数据库。
 

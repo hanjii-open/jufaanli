@@ -115,12 +115,13 @@ class Doc < ActiveRecord::Base
     end
   end
 
-  def self.export
+  def self.export brief = true
     crime_klasses.each do |klass|
       puts "#{Time.current}... #{klass.name} #{__method__} #{klass.count}"
       CSV.open(File.join('tmp', "#{klass.model_name.singular}_#{klass::NAME}.csv"), 'w') do |csv|
         crime_attrs = klass.attribute_names - %w[id doc_id]
         doc_attrs = Doc.attribute_names - %w[id]
+        doc_attrs.delete('content') if brief
         csv << crime_attrs.map { klass::ATTRS[_1] } + doc_attrs.map { Doc::ATTRS[_1] }
         klass.includes(:doc).find_each do |crime|
           csv << crime.values_at(crime_attrs) + crime.doc.values_at(doc_attrs)

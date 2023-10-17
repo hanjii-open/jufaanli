@@ -22,6 +22,14 @@ end
 
 init(ARGV.include?('reset!') ? :all : ARGV.include?('reset'))
 
-Doc.import if ARGV.include?('all') || ARGV.include?('import')
-Doc.scrape if ARGV.include?('all') || ARGV.include?('scrape')
-Doc.export if ARGV.include?('all') || ARGV.include?('export')
+if ARGV.include?('all') || ARGV.include?('import')
+  Doc.import
+end
+if ARGV.include?('all') || ARGV.include?('scrape')
+  Doc.scrape
+end
+if ARGV.include?('all') || ARGV.include?('export')
+  Doc.export
+elsif ARGV.include?('export!')
+  Doc.export(false)
+end
