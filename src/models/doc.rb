@@ -59,8 +59,10 @@ class Doc < ActiveRecord::Base
     end
   end
 
-  def self.crime_klasses
-    [Crime1, Crime2, Crime3, Crime4, Crime5, Crime6]
+  def self.crime_klasses only: nil
+    only = Array(only).filter { /^crime[\d]+$/.match?(_1) }.map(&:downcase)
+    klasses = [Crime1, Crime2, Crime3, Crime4, Crime5, Crime6]
+    only.any? ? klasses.filter { only.include?(_1.name.downcase) } : klasses
   end
 
   def self.unzip dir = File.join('tmp', 'zip')
@@ -109,14 +111,14 @@ class Doc < ActiveRecord::Base
     unzip
   end
 
-  def self.scrape
-    crime_klasses.each do |klass|
+  def self.scrape only: nil
+    crime_klasses(only:).each do |klass|
       klass.scrape
     end
   end
 
-  def self.export brief = true
-    crime_klasses.each do |klass|
+  def self.export only: nil, brief: true
+    crime_klasses(only:).each do |klass|
       puts "#{Time.current}... #{klass.name} #{__method__} #{klass.count}"
       CSV.open(File.join('tmp', "#{klass.model_name.singular}_#{klass::NAME}.csv"), 'w') do |csv|
         crime_attrs = klass.attribute_names - %w[id doc_id]

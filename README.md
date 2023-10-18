@@ -1,7 +1,7 @@
 # Usage
 
 ```
-ruby src/main.rb [all|import|scrape|export|reset|reset!]
+ruby src/main.rb [all|import|scrape|export|reset|reset!] [crimeN...]
 ```
 
 ## import
@@ -31,6 +31,10 @@ ruby src/main.rb [all|import|scrape|export|reset|reset!]
 ## reset!
 
 重置全部数据库。
+
+## crimeN
+
+可以指定目标罪名，可用名包括 `crime1...crime6` 。
 
 # Installation
 

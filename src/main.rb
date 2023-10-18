@@ -26,10 +26,10 @@ if ARGV.include?('all') || ARGV.include?('import')
   Doc.import
 end
 if ARGV.include?('all') || ARGV.include?('scrape')
-  Doc.scrape
+  Doc.scrape(only: ARGV)
 end
 if ARGV.include?('all') || ARGV.include?('export')
-  Doc.export
+  Doc.export(only: ARGV)
 elsif ARGV.include?('export!')
-  Doc.export(false)
+  Doc.export(only: ARGV, brief: false)
 end
