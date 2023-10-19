@@ -34,7 +34,8 @@ ruby src/main.rb [all|import|scrape|export|reset|reset!] [crimeN...]
 
 ## crimeN
 
-可以指定目标罪名，可用名包括 `crime1...crime6` 。
+可以指定目标罪名，只对其执行相关操作。
+可用名包括 `crime1` ... `crime6` ；支持操作包括 `scrape` / `export` / `reset` 。
 
 # Installation
 

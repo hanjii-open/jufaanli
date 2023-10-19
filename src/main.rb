@@ -1,4 +1,4 @@
-def init reset = false
+def init reset = false, only: nil
   require 'zip'
   require 'csv'
   require 'active_record'
@@ -14,13 +14,13 @@ def init reset = false
   end
 
   Doc::Migration.migrate(:up) unless Doc.table_exists?
-  Doc.crime_klasses.each do |klass|
+  Doc.crime_klasses(only:).each do |klass|
     klass::Migration.migrate(:down) if klass.table_exists? && reset
     klass::Migration.migrate(:up) unless klass.table_exists?
   end
 end
 
-init(ARGV.include?('reset!') ? :all : ARGV.include?('reset'))
+init(ARGV.include?('reset!') ? :all : ARGV.include?('reset'), only: ARGV)
 
 if ARGV.include?('all') || ARGV.include?('import')
   Doc.import

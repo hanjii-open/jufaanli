@@ -32,7 +32,8 @@ class Crime5 < ActiveRecord::Base
     d26t: '缓刑长度*',
     d27: '是否判处罚金',
     d28: '罚金数额',
-    d28t: '罚金数额*'
+    d28t: '罚金数额*',
+    d29: '是否免予刑事处罚'
   }.with_indifferent_access.freeze
 
   class Migration < ActiveRecord::Migration[7.0]
@@ -86,7 +87,8 @@ class Crime5 < ActiveRecord::Base
           d26t: Doc.translate_date(d26),
           d27: d27 = /罚金/.match?(conclusion),
           d28: d28 = d27.presence && /罚金[^#{Doc::PUNS}]*?(#{Doc::RMB_EXP})/.match(conclusion)&.[](1),
-          d28t: Doc.translate_rmb(d28)
+          d28t: Doc.translate_rmb(d28),
+          d29: /免[予于除]刑事处罚/.match?(line)
         }
       end
       upsert_all(batch) if batch.any?
